@@ -1,14 +1,14 @@
 use std::fs;
 
 fn main() {
-    auf_2_2();
+    // auf_2_2();
     println!("Variante 2");
     _auf_2();
 }
 
 fn fetch_data() -> Vec<String> {
-    let data = fs::read_to_string("/Users/jannesmuller/Developer/rust/aoc2025/day1/input_test.txt")
-        .unwrap();
+    let data =
+        fs::read_to_string("/Users/jannesmuller/Developer/rust/aoc2025/day1/input.txt").unwrap();
     let data_vec: Vec<String> = data.lines().into_iter().map(|f| f.to_string()).collect();
     return data_vec;
 }
@@ -52,33 +52,35 @@ fn _auf_2() {
     let data = fetch_data();
     let mut dial: i32 = 50;
     let mut counter: u32 = 0;
-    let mut gez = false;
+    // let mut gez = false;
     for i in data {
-        let (x, y) = i.split_at(1);
-        if y.parse::<i32>().unwrap() > 99 {
-            let yy96 = y.parse::<u32>().unwrap() % 100;
-            let yyy4000 = y.parse::<u32>().unwrap() - yy96;
+        let (x, yx) = i.split_at(1);
+        let y: i32 = yx.parse().unwrap();
+        let yy96 = y % 100;
+        if y > 99 {
+            let yyy4000 = y - yy96;
             let yyyy40 = yyy4000 / 100;
-            counter += yyyy40;
-            dbg!("yyy40=", yyyy40);
+            counter += yyyy40 as u32;
+            dbg!(yyyy40);
         }
-        let yy96 = y.parse::<i32>().unwrap() % 100;
 
         if x == "R" {
             if dial + yy96 > 99 {
                 counter += 1;
-                dbg!("counter up on:", dial);
             }
             dial = (dial + yy96) % 100;
+            dbg!(dial);
         } else {
-            if dial - yy96 <= 0 {
-                counter += 1;
-                dbg!("counter up on:", dial);
+            if (dial - yy96) <= 0 {
+                if dial != 0 {
+                    counter += 1;
+                }
             }
-            dial = dial - yy96 % 100;
+            dial = (dial - yy96) % 100;
             if dial < 0 {
                 dial = 100 + dial;
             }
+            dbg!(dial);
         }
         // if dial == 0 || dial == 100 {
         //     if gez == true {
@@ -102,7 +104,7 @@ fn auf_2_2() {
     let mut counter = 0;
     for i in data {
         let mut r = vec_r.iter().cycle().skip(dial as usize);
-        let mut l = vec_l.iter().cycle().skip(dial as usize);
+        let mut l = vec_l.iter().cycle().skip(dial as usize - 1);
         let (x, y) = i.split_at(1);
         if x == "R" {
             for _ in 0..y.parse::<u32>().unwrap() {
