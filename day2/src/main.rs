@@ -10,8 +10,7 @@ fn main() {
 
 fn auf1() {
     let mut data_total =
-        fs::read_to_string("/Users/jannesmuller/Developer/rust/aoc2025/day2/input_test.txt")
-            .unwrap();
+        fs::read_to_string("/Users/jannesmuller/Developer/rust/aoc2025/day2/input.txt").unwrap();
     data_total = data_total.replace('\n', "");
     let data_vec_1: Vec<&str> = data_total.split(',').collect();
     let mut counter = 0;
@@ -22,6 +21,9 @@ fn auf1() {
         let y: u128 = data_vec_2.get(1).unwrap().parse::<u128>().unwrap();
 
         for d in x..y + 1 {
+            if false && is_repetition(d.to_string().as_str()) {
+                counter += d;
+            }
             counter += validate_2(d);
         }
     }
@@ -54,7 +56,7 @@ fn validate_2(input: u128) -> u128 {
     //     return input;
     // }
     for i in 1..number.len() {
-        if input % i as u128 == 0 {
+        if number.len() % i as usize == 0 {
             let mut reg = "^".to_string();
             for _ in 0..number.len() / i {
                 reg.push_str(r"(\d{");
@@ -62,12 +64,12 @@ fn validate_2(input: u128) -> u128 {
                 reg.push_str("})");
             }
             reg.push('$');
-            dbg!(&input);
+            // dbg!(&input);
             let re = Regex::new(&reg).unwrap();
             let cap = re.captures(number.as_str()).unwrap();
 
-            let mut f: usize = 1;
-            let cap0 = &cap[0];
+            let mut f: usize = 2;
+            let cap0 = &cap[1];
             loop {
                 let bel = &cap.get(f);
                 if bel.is_some() {
@@ -83,7 +85,29 @@ fn validate_2(input: u128) -> u128 {
                 }
             }
         }
+        if is_the_same {
+            break;
+        }
     }
     //check for two in an Row
-    if is_the_same { input } else { 0 }
+    if is_the_same {
+        dbg!("added");
+        input
+    } else {
+        0
+    }
+}
+fn is_repetition(s: &str) -> bool {
+    (1..=s.len() / 2)
+        .any(|n| s.len() % n == 0 && s.as_bytes().chunks(n).all(|c| c == &s.as_bytes()[..n]))
+}
+#[cfg(test)]
+mod tests {
+    use crate::validate_2;
+
+    #[test]
+    fn check_validate2() {
+        assert_eq!(validate_2(565656), 565656);
+        assert_eq!(validate_2(100), 0);
+    }
 }
