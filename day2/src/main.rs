@@ -21,10 +21,10 @@ fn auf1() {
         let y: u128 = data_vec_2.get(1).unwrap().parse::<u128>().unwrap();
 
         for d in x..y + 1 {
-            if false && is_repetition(d.to_string().as_str()) {
+            if is_repetition(d.to_string().as_str()) {
                 counter += d;
             }
-            counter += validate_2(d);
+            // counter += _validate_3(d);
         }
     }
     dbg!(counter);
@@ -42,19 +42,10 @@ fn _validate(input: u128) -> u128 {
     }
 }
 
-fn validate_2(input: u128) -> u128 {
-    // check for one in an Row
+fn _validate_2(input: u128) -> u128 {
     let number = input.to_string();
-    // let number_vec: Vec<char> = number.chars().collect();
     let mut is_the_same = true;
-    // for f in 0..number_vec.len() - 1 {
-    //     if number_vec.get(0) != number_vec.get(f) {
-    //         is_the_same = false;
-    //     }
-    // }
-    // if is_the_same {
-    //     return input;
-    // }
+
     for i in 1..number.len() {
         if number.len() % i as usize == 0 {
             let mut reg = "^".to_string();
@@ -97,17 +88,58 @@ fn validate_2(input: u128) -> u128 {
         0
     }
 }
+
+fn _validate_3(input: u128) -> u128 {
+    let input_str = input.to_string();
+    let mut is_same = true;
+    // dbg!(&input);
+
+    for i in 1..=input_str.len() {
+        if input_str.len() % i == 0 {
+            let vec: Vec<char> = input_str.chars().collect();
+            let vec_chunks: Vec<Vec<char>> = vec.chunks(i).map(|chunk| chunk.to_vec()).collect();
+            let mut vec_compare: Vec<String> = Vec::new();
+            for k in &vec_chunks {
+                vec_compare.push(k.iter().map(|f| f.to_string()).collect::<String>());
+            }
+            for j in 1..vec_compare.len() {
+                if vec_compare[0] != vec_compare[j] {
+                    is_same = false;
+                    break;
+                } else {
+                    is_same = true;
+                }
+            }
+        }
+        if is_same {
+            break;
+        }
+    }
+    if is_same {
+        dbg!("added");
+        return input;
+    }
+    0
+}
+
 fn is_repetition(s: &str) -> bool {
     (1..=s.len() / 2)
         .any(|n| s.len() % n == 0 && s.as_bytes().chunks(n).all(|c| c == &s.as_bytes()[..n]))
 }
+
 #[cfg(test)]
 mod tests {
-    use crate::validate_2;
+    use crate::{_validate_2, _validate_3};
 
     #[test]
     fn check_validate2() {
-        assert_eq!(validate_2(565656), 565656);
-        assert_eq!(validate_2(100), 0);
+        assert_eq!(_validate_2(565656), 565656);
+        assert_eq!(_validate_2(100), 0);
+    }
+
+    #[test]
+    fn check_validate3() {
+        assert_eq!(_validate_3(565656), 565656);
+        assert_eq!(_validate_3(100), 0);
     }
 }
